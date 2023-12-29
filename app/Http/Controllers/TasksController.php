@@ -9,9 +9,15 @@ use Illuminate\Support\Facades\Validator;
 
 class TasksController extends Controller
 {
-    public function allTasks(){
-        $alltasks=tasks::all();
+    public function allTasks(Request $request){
+        $alltasks=tasks::where('user_id',$request->user_id)->get();
         return response()->json($alltasks, 200);
+    }
+
+    //သက်ဆိုင်တဲ့ user ရဲ့ task တွေကိုပဲခေါ်မှာ
+    private function tasks($userid){
+        $usertasks=tasks::where('user_id',$userid)->get();
+        return response()->json($usertasks, 200);
     }
 
     public function createTask(Request $request){
@@ -24,7 +30,7 @@ class TasksController extends Controller
             'task_name'=>$request->task_name,
             'user_id'=>$request->user_id
         ]);
-        return $this->allTasks();
+        return $this->tasks($request->user_id);
     }
     public function updateTask(Request $request){
         Validator::make($request->all(),[
@@ -35,12 +41,28 @@ class TasksController extends Controller
         tasks::where('id',$request->task_id)->update([
             'task_name'=>$request->edit_task,
         ]);
-        return $this->allTasks();
+        return $this->tasks($request->user_id);
     }
 
     public function deleteTask(Request $request){
         tasks::where('id',$request->task_id)->delete();
-       return $this->allTasks();
+        return $this->tasks($request->user_id);
     }
+    public function addFav(Request $request){
+
+            tasks::where('id',$request->task_id)
+            ->update([
+                'isFav'=>$request->isFav,
+            ]);
+            return $this->tasks($request->user_id);
+    }
+    public function addDone(Request $request){
+
+        tasks::where('id',$request->task_id)
+        ->update([
+            'isDone'=>$request->isDone,
+        ]);
+        return $this->tasks($request->user_id);
+}
 
 }

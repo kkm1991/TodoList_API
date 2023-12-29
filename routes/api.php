@@ -20,12 +20,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('login',[AuthController::class,'login']);
-Route::post('register',[AuthController::class,'register'])->middleware('auth:sanctum');
+Route::post('register',[AuthController::class,'register']);
 
 
 Route::middleware(['auth:sanctum'])->prefix('task')->group(function (){
     Route::get('list',[TasksController::class,'allTasks']);
     Route::post('add',[TasksController::class,'createTask']);
     Route::post('update',[TasksController::class,'updateTask']);
-    Route::get('delete',[TasksController::class,'deleteTask']);
+    Route::post('delete',[TasksController::class,'deleteTask']);
+    Route::post('addFav',[TasksController::class,'addFav']);
+    Route::post('addDone',[TasksController::class,'addDone']);
 });
